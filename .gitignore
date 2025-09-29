@@ -1,0 +1,14 @@
+*** a/.gitignore
+--- b/.gitignore
+@@
++__pycache__/
++.pytest_cache/
++.venv/
++env/
++venv/
++.DS_Store
++
++# Task data and backups
++/data/*.json
++/data/*.json.tmp
++/data/*.json.bak
