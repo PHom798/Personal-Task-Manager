@@ -1,41 +1,87 @@
 # Personal Task Manager
 
-A simple **command-line** task management application built with Python. You can add, list, complete, and delete tasks from your terminal.
+A simple command-line task manager written in Python. You can add, list, complete, and delete tasks right from your terminal.
 
 ---
 
 ## ✨ Features
-
-- Add new tasks
-- List all tasks (with optional status filters)
+- Add tasks with descriptions
+- List all tasks, filter by completed/pending
 - Mark tasks as complete
 - Delete tasks
-- Simple JSON file storage (no external DB)
-- Zero external runtime dependencies
+- Saves to a local JSON file (no database required)
 
 ---
 
 ## 🧰 Requirements
-
-- **Python**: 3.9+ (tested with 3.10/3.11)
-- **OS**: Linux, macOS, or Windows
-
-> No third-party packages are required to run the app. (A `requirements-dev.txt` may exist for development tasks like testing/formatting.)
+- Python **3.9+**
+- Works on Linux, macOS, Windows
+- No external packages required
 
 ---
 
-## 🔧 Installation (2 minutes)
-
+## 🔧 Installation
 ```bash
-# 1) Clone your fork
+# Clone your fork
 git clone https://github.com/<your-username>/Personal-Task-Manager.git
 cd Personal-Task-Manager
 
-# 2) (Optional but recommended) Create a virtual environment
+# (Optional) create virtual environment
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux:
 source .venv/bin/activate
+```
 
-# 3) Run the CLI help
-python main.py --help
+---
+
+## 🚀 Usage
+
+Add a task:
+```bash
+python main.py add "Buy groceries"
+```
+
+List tasks:
+```bash
+python main.py list
+python main.py list --status completed
+python main.py list --status pending
+```
+
+Complete a task:
+```bash
+python main.py complete 1
+```
+
+Delete a task:
+```bash
+python main.py delete 2
+```
+
+Tasks are stored in `tasks.json` automatically.
+
+---
+
+## 🗂 Project structure
+```
+.
+├── main.py            # CLI entry point
+├── task_manager.py    # Task logic + storage
+├── tasks.json         # Created automatically
+└── README.md
+```
+
+---
+
+## 🤝 Contributing
+1. Fork the repo
+2. Create a branch: `git checkout -b feature-name`
+3. Commit: `git commit -m "feat: add feature"`
+4. Push: `git push origin feature-name`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+MIT
