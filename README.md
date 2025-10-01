@@ -1,29 +1,41 @@
 # Personal Task Manager
 
-A simple command-line task management application built with Python.
+A simple **command-line** task management application built with Python. You can add, list, complete, and delete tasks from your terminal.
 
-## Features (Coming Soon)
-- ✅ Add new tasks
-- ✅ List all tasks with filtering
-- ✅ Mark tasks as complete
-- ✅ Delete tasks
-- ✅ Task statistics and summary
-- ✅ Interactive CLI interface
+---
 
+## ✨ Features
 
-##Development
-This project is being developed incrementally:
+- Add new tasks
+- List all tasks (with optional status filters)
+- Mark tasks as complete
+- Delete tasks
+- Simple JSON file storage (no external DB)
+- Zero external runtime dependencies
 
-Issue #1: Basic task structure and storage
-Issue #2: Add task functionality
-Issue #3: List/view tasks
-Issue #4: Mark tasks complete
-Issue #5: Delete tasks
-Issue #6: CLI interface
+---
 
-## Installation
+## 🧰 Requirements
+
+- **Python**: 3.9+ (tested with 3.10/3.11)
+- **OS**: Linux, macOS, or Windows
+
+> No third-party packages are required to run the app. (A `requirements-dev.txt` may exist for development tasks like testing/formatting.)
+
+---
+
+## 🔧 Installation (2 minutes)
+
 ```bash
-git clone <your-repo-url>
-cd personal-task-manager
-python main.py --help
+# 1) Clone your fork
+git clone https://github.com/<your-username>/Personal-Task-Manager.git
+cd Personal-Task-Manager
 
+# 2) (Optional but recommended) Create a virtual environment
+python -m venv .venv
+# Windows: .venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+
+# 3) Run the CLI help
+python main.py --help
