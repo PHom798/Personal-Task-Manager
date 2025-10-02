@@ -66,6 +66,12 @@ def main(argv=None) -> int:
 
     )
 
+    # Issue #4: mark complete
+
+    p_done = subparsers.add_parser("complete", help="Mark a task as complete")
+
+    p_done.add_argument("id", help="Task ID to mark as complete")
+
     args = parser.parse_args(argv)
 
     tm = build_manager(args.db)
@@ -113,6 +119,20 @@ def main(argv=None) -> int:
             else:
 
                 print(f"{status} {t.created_date}  {t.description}")
+
+        return 0
+
+    elif args.command == "complete":
+
+        t = tm.complete(args.id)
+
+        if t is None:
+
+            print(f"Task not found: {args.id}")
+
+            return 1
+
+        print(f"Completed: {t.id}  {t.description}")
 
         return 0
 
