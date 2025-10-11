@@ -153,73 +153,167 @@ class TaskStorage:
             print(f"❌ Unexpected error saving tasks: {e}")
 
 
+class TaskManager:
+    """
+    Main task manager class that handles all task operations
+    
+    Attributes:
+        storage (TaskStorage): Storage handler for persisting tasks
+        tasks (List[Task]): In-memory list of all tasks
+    """
+    
+    def __init__(self, storage_file: str = 'tasks.json'):
+        """
+        Initialize TaskManager
+        
+        Args:
+            storage_file (str): Path to JSON file for storing tasks
+        """
+        self.storage = TaskStorage(storage_file)
+        self.tasks = self.storage.load_tasks()
+        print(f"🎯 Task Manager initialized with {len(self.tasks)} existing tasks")
+    
+    def add_task(self, description: str) -> bool:
+        """
+        Add a new task to the task list
+        
+        Args:
+            description (str): Task description text
+            
+        Returns:
+            bool: True if task added successfully, False otherwise
+        """
+        # Validate input - check for None
+        if description is None:
+            print("❌ Error: Task description cannot be None!")
+            return False
+        
+        # Validate input - check for empty string
+        if not description or description.strip() == "":
+            print("❌ Error: Task description cannot be empty!")
+            print("💡 Tip: Please provide a meaningful task description")
+            return False
+        
+        # Check for excessively long descriptions
+        if len(description.strip()) > 500:
+            print("❌ Error: Task description is too long (max 500 characters)")
+            print(f"   Your description: {len(description.strip())} characters")
+            return False
+        
+        # Create new task with trimmed description
+        trimmed_description = description.strip()
+        new_task = Task(trimmed_description)
+        
+        # Add to task list
+        self.tasks.append(new_task)
+        
+        # Persist to file
+        try:
+            self.storage.save_tasks(self.tasks)
+        except Exception as e:
+            # Rollback if save fails
+            self.tasks.pop()
+            print(f"❌ Error: Failed to save task: {e}")
+            return False
+        
+        # Provide user feedback
+        print(f"\n✅ Task added successfully!")
+        print(f"   ID: {new_task.id}")
+        print(f"   Description: {new_task.description}")
+        print(f"   Created: {datetime.fromisoformat(new_task.created_date).strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"   Total tasks: {len(self.tasks)}")
+        
+        return True
+    
+    def _find_task_by_id(self, task_id: int):
+        """
+        Helper method to find a task by its ID
+        
+        Args:
+            task_id (int): Task ID to search for
+            
+        Returns:
+            Task or None: Task object if found, None otherwise
+        """
+        for task in self.tasks:
+            if task.id == task_id:
+                return task
+        return None
+
+
 # Test functionality when run directly
 if __name__ == "__main__":
-    print("=" * 60)
-    print("Testing Task Manager - Basic Structure & Storage")
-    print("=" * 60)
+    print("=" * 70)
+    print("Testing Task Manager - Add Task Feature")
+    print("=" * 70)
     
-    # Initialize storage
-    print("\n1. Initializing TaskStorage...")
-    storage = TaskStorage('test_tasks.json')
+    # Initialize TaskManager
+    print("\n1. Initializing TaskManager...")
+    manager = TaskManager('test_tasks.json')
     
-    # Create sample tasks
-    print("\n2. Creating sample tasks...")
-    task1 = Task("Learn GitHub workflow")
-    task2 = Task("Practice opening issues")
-    task3 = Task("Master pull requests")
+    # Test adding valid tasks
+    print("\n2. Testing valid task additions...")
+    print("\n   Test 2a: Normal task")
+    result1 = manager.add_task("Buy groceries for the week")
     
-    print(f"   Created: {task1}")
-    print(f"   Created: {task2}")
-    print(f"   Created: {task3}")
+    print("\n   Test 2b: Task with special characters")
+    result2 = manager.add_task("Schedule dentist appointment @ 3:00 PM")
     
-    # Test save functionality
-    print("\n3. Testing save functionality...")
-    tasks = [task1, task2, task3]
-    storage.save_tasks(tasks)
+    print("\n   Test 2c: Task with numbers")
+    result3 = manager.add_task("Read chapters 1-5 of Python book")
     
-    # Test load functionality
-    print("\n4. Testing load functionality...")
-    loaded_tasks = storage.load_tasks()
+    # Test edge cases
+    print("\n3. Testing edge cases...")
     
-    # Verify data integrity
-    print("\n5. Verifying data integrity...")
-    print(f"   Original tasks: {len(tasks)}")
-    print(f"   Loaded tasks: {len(loaded_tasks)}")
+    print("\n   Test 3a: Empty string")
+    result4 = manager.add_task("")
     
-    if len(tasks) == len(loaded_tasks):
-        print("   ✅ Task count matches!")
+    print("\n   Test 3b: Only whitespace")
+    result5 = manager.add_task("   ")
+    
+    print("\n   Test 3c: Task with leading/trailing spaces (should be trimmed)")
+    result6 = manager.add_task("   Complete Python project   ")
+    
+    print("\n   Test 3d: None value")
+    result7 = manager.add_task(None)
+    
+    print("\n   Test 3e: Very long description")
+    long_desc = "A" * 600
+    result8 = manager.add_task(long_desc)
+    
+    print("\n   Test 3f: Single character task")
+    result9 = manager.add_task("✓")
+    
+    # Test data persistence
+    print("\n4. Testing data persistence...")
+    print("   Creating new TaskManager instance to verify save/load...")
+    manager2 = TaskManager('test_tasks.json')
+    print(f"   Loaded {len(manager2.tasks)} tasks from storage")
+    
+    if len(manager2.tasks) == len([r for r in [result1, result2, result3, result6, result9] if r]):
+        print("   ✅ Data persistence verified!")
     else:
-        print("   ❌ Task count mismatch!")
+        print("   ❌ Data persistence failed!")
     
-    # Display loaded tasks
-    print("\n6. Loaded tasks:")
-    for i, task in enumerate(loaded_tasks, 1):
+    # Display all tasks
+    print("\n5. Current tasks in system:")
+    for i, task in enumerate(manager2.tasks, 1):
         print(f"   {i}. {task}")
-        print(f"      ID: {task.id}")
-        print(f"      Description: {task.description}")
-        print(f"      Created: {task.created_date}")
-        print(f"      Completed: {task.is_completed}")
     
-    # Test task modification
-    print("\n7. Testing task modification...")
-    if loaded_tasks:
-        loaded_tasks[0].is_completed = True
-        storage.save_tasks(loaded_tasks)
-        print(f"   Modified task: {loaded_tasks[0]}")
-        
-        # Reload to verify persistence
-        reloaded_tasks = storage.load_tasks()
-        print(f"   Reloaded task: {reloaded_tasks[0]}")
-        
-        if reloaded_tasks[0].is_completed:
-            print("   ✅ Modification persisted successfully!")
-        else:
-            print("   ❌ Modification not persisted!")
+    # Summary
+    print("\n6. Test Summary:")
+    tests_passed = sum([result1, result2, result3, result6, result9])
+    tests_failed = sum([not result4, not result5, not result7, not result8])
+    total_tests = tests_passed + tests_failed
     
-    print("\n" + "=" * 60)
+    print(f"   Total tests: {total_tests}")
+    print(f"   ✅ Passed: {tests_passed}")
+    print(f"   ❌ Failed: {tests_failed}")
+    print(f"   Success rate: {(tests_passed/total_tests)*100:.1f}%")
+    
+    print("\n" + "=" * 70)
     print("✅ All tests completed!")
-    print("=" * 60)
+    print("=" * 70)
     
     # Cleanup test file
     if os.path.exists('test_tasks.json'):
